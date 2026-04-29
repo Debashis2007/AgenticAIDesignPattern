@@ -1,0 +1,117 @@
+# ImmigrationChatbot
+
+MVP chatbot for reducing stress around immigration/career uncertainty through:
+- timeline guidance
+- conflict clarification with confidence labels
+- communication draft support
+
+## Core Stack
+- **Frontend:** React / Next.js chat UI (`frontend/`)
+- **Backend:** Python FastAPI (`src/immigration_chatbot/api.py`)
+- **LLM:** OpenAI-compatible API (OpenAI by default, Ollama optional)
+- **Memory:** Pluggable backend (`sql` or `firebase`) with SQLAlchemy/Firestore
+
+## Project Structure
+- `requirement/` - master requirement, micro-requirements, acceptance criteria
+- `prompts/` - reusable prompts for requirement and code generation
+- `src/immigration_chatbot/` - backend API, engine, LLM adapter, memory
+- `frontend/` - Next.js chat interface
+- `tests/` - unit tests for engine + API
+
+## Backend Setup
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -U pip
+pip install -e .
+```
+
+## Environment
+Copy `.env` values and update keys as needed.
+
+### OpenAI mode (default)
+```bash
+export LLM_ENABLED=true
+export LLM_PROVIDER=openai
+export OPENAI_API_KEY=your_openai_api_key_here
+export OPENAI_MODEL=gpt-4o-mini
+```
+
+### Ollama mode (optional)
+```bash
+ollama serve
+ollama pull llama3.1:8b
+export LLM_PROVIDER=ollama
+export OLLAMA_BASE_URL=http://localhost:11434/v1
+export OLLAMA_MODEL=llama3.1:8b
+```
+
+### Memory backend selection
+```bash
+# SQL backend (default)
+export MEMORY_BACKEND=sql
+export DATABASE_URL=sqlite:///./chatbot.db
+
+# Firebase backend (optional)
+export MEMORY_BACKEND=firebase
+export FIREBASE_PROJECT_ID=your_firebase_project_id
+export FIREBASE_COLLECTION=chat_messages
+```
+
+### Optional API key auth
+```bash
+export API_AUTH_ENABLED=true
+export API_AUTH_KEY=replace_with_secure_api_key
+```
+
+## Run Backend API
+```bash
+source .venv/bin/activate
+python -m uvicorn immigration_chatbot.api:app --reload --host 0.0.0.0 --port 8000
+```
+
+## Frontend Setup (Next.js)
+```bash
+cd frontend
+npm install
+cp .env.local.example .env.local
+npm run dev
+```
+
+## Frontend (from repository root)
+```bash
+npm run install:frontend
+npm run dev
+```
+
+## Full stack (backend + frontend together)
+```bash
+npm install
+npm run dev:all
+```
+
+## API Smoke Test
+```bash
+curl -X POST http://localhost:8000/api/chat \
+	-H "Content-Type: application/json" \
+	-d '{"session_id":"demo","message":"I am waiting on visa processing"}'
+```
+
+## Streaming API Smoke Test (SSE)
+```bash
+curl -N -X POST http://localhost:8000/api/chat/stream \
+	-H "Content-Type: application/json" \
+	-d '{"session_id":"demo-stream","message":"Help me draft a recruiter message"}'
+```
+
+## Tests
+```bash
+source .venv/bin/activate
+pytest -q
+```
+
+## Notes
+- This MVP gives informational guidance and does not provide legal advice.
+- If LLM is unavailable, backend returns deterministic rule-based fallback responses.
+- For production SQL memory, set `DATABASE_URL` to a Postgres connection string.
+- Frontend uses streaming endpoint (`/api/chat/stream`) and supports optional API key header.

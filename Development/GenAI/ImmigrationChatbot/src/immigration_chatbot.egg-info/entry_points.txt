@@ -1,0 +1,3 @@
+[console_scripts]
+immigration-chatbot = immigration_chatbot.cli:main
+immigration-chatbot-api = immigration_chatbot.api:run

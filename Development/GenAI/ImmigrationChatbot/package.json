@@ -1,0 +1,15 @@
+{
+  "name": "immigration-chatbot-workspace",
+  "private": true,
+  "scripts": {
+    "backend": "./scripts/run_backend.sh",
+    "dev": "npm --prefix frontend run dev",
+    "dev:all": "concurrently -k -n backend,frontend -c cyan,magenta \"npm run backend\" \"npm run dev\"",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
+    "install:frontend": "npm --prefix frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
